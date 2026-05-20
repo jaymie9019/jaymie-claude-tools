@@ -4,19 +4,14 @@ Jaymie 个人 Claude Code 工具箱，按官方 [Plugin](https://code.claude.com
 
 ## 包含内容
 
-### Commands
+所有功能都以 Claude Code skill 形式实现，调用时**无需 plugin 前缀**（如 `/print-sessionid` 而非 `/jaymie-claude-tools:print-sessionid`）。
 
-| 命令 | 说明 |
-| --- | --- |
-| `/jaymie-claude-tools:print-sessionid` | 打印当前 Claude Code 会话的 session ID（Desktop / CLI 通用） |
+| Skill | 类型 | 说明 |
+| --- | --- | --- |
+| `/print-sessionid` | user-invoked | 打印当前 Claude Code 会话的 session ID（Desktop / CLI 通用） |
+| `html-spec-workflow` | model-invoked | 用 HTML（而非 Markdown）作为 AI 协作的规格/计划/设计系统媒介。触发词：做计划、PRD、技术规格、脑暴、设计系统、用 HTML 写 spec 等 |
 
-### Skills
-
-Skill 源仓库在 [`jaymie9019/skills`](https://github.com/jaymie9019/skills)，定期 vendor（复制）到本仓库 `skills/` 目录下，确保 `/plugin install` 时一次拉齐、不依赖 submodule。
-
-| Skill | 说明 |
-| --- | --- |
-| `html-spec-workflow` | 用 HTML（而非 Markdown）作为 AI 协作的规格/计划/设计系统媒介。触发词：做计划、PRD、技术规格、脑暴、设计系统、用 HTML 写 spec 等 |
+> `html-spec-workflow` 由 model 根据上下文自动调用，无需手动触发；其源仓库在 [`jaymie9019/skills`](https://github.com/jaymie9019/skills)，定期 vendor 到本仓库 `skills/` 下。
 
 ## 通过 `/plugin` 在 Claude Code 内安装（推荐）
 
@@ -42,7 +37,7 @@ git clone https://github.com/jaymie9019/jaymie-claude-tools.git
 claude --plugin-dir ./jaymie-claude-tools
 ```
 
-启动后用 `/jaymie-claude-tools:<command>` 调用任意命令；`/help` 可以看到本插件下的所有命令。修改插件内容后，在会话里运行 `/reload-plugins` 即可热加载，不需要重启。
+启动后用 `/<skill-name>` 调用 user-invoked skill；`/help` 可以看到本插件下的所有 skill。修改插件内容后，在会话里运行 `/reload-plugins` 即可热加载，不需要重启。
 
 ## 维护：同步 skills 仓库
 
@@ -71,15 +66,20 @@ jaymie-claude-tools/
 ├── .claude-plugin/
 │   ├── plugin.json              # Plugin manifest
 │   └── marketplace.json         # Marketplace catalog (self-referencing)
-├── commands/                    # User-invoked slash commands
-│   └── print-sessionid.md
-├── skills/                      # Vendored from jaymie9019/skills
-│   └── html-spec-workflow/
+├── skills/
+│   ├── print-sessionid/         # User-invoked (disable-model-invocation)
+│   │   └── SKILL.md
+│   └── html-spec-workflow/      # Model-invoked (vendored from jaymie9019/skills)
 │       ├── SKILL.md
 │       ├── prompts/
 │       └── references/
 └── README.md
 ```
+
+约定：
+- 所有功能用 `skills/<name>/SKILL.md`，不再使用 `commands/`（避免 `/plugin-name:` 前缀）
+- User-invoked（用户主动 `/name` 调）→ 在 frontmatter 加 `disable-model-invocation: true`
+- Model-invoked（model 根据上下文调）→ 不加该字段，并把 `description` 写清楚触发场景
 
 后续会扩展 `agents/`、`hooks/` 等目录。
 

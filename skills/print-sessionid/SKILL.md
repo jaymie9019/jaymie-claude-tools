@@ -1,6 +1,10 @@
-# Print Session ID
+---
+name: print-sessionid
+description: 打印当前 Claude Code 会话的 session ID（Desktop / CLI 通用）
+disable-model-invocation: true
+---
 
-打印当前 Claude Code 会话的 session ID（Desktop / CLI 通用）。
+# Print Session ID
 
 执行以下 Bash 命令，并把结果**原样**输出给用户，不要做任何解释或多余文字：
 
