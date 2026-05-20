@@ -13,7 +13,7 @@ Jaymie 个人 Claude Code 工具箱，按官方 [Plugin](https://code.claude.com
 ## 本地试用
 
 ```bash
-git clone https://github.com/jaymie/jaymie-claude-tools.git
+git clone https://github.com/jaymie9019/jaymie-claude-tools.git
 claude --plugin-dir ./jaymie-claude-tools
 ```
 
