@@ -1,0 +1,14 @@
+{
+  "name": "jaymie-tools",
+  "description": "Jaymie's personal Claude Code plugin catalog",
+  "owner": {
+    "name": "Jaymie"
+  },
+  "plugins": [
+    {
+      "name": "jaymie-claude-tools",
+      "source": "./",
+      "description": "Personal toolbox of Claude Code commands and skills"
+    }
+  ]
+}
