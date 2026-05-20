@@ -27,8 +27,11 @@ Jaymie 个人 Claude Code 工具箱，按官方 [Plugin](https://code.claude.com
 **更新到最新版本**：
 
 ```
-/plugin marketplace update jaymie-tools
+/plugin marketplace update jaymie-tools     # 1. 拉最新的 marketplace catalog
+/plugin update jaymie-claude-tools@jaymie-tools  # 2. 升级 plugin 本体（仅当 plugin.json 的 version 已 bump）
 ```
+
+> 因为 `plugin.json` 设置了显式 `version` 字段，必须 bump 它（如 `0.2.0` → `0.2.1`）`/plugin update` 才会重拉。如果想"每次 commit 都算新版本"，可以删掉 manifest 里的 `version` 字段。
 
 ## 本地试用 / 开发模式
 
