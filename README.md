@@ -12,7 +12,7 @@ Jaymie 个人 Claude Code 工具箱，按官方 [Plugin](https://code.claude.com
 
 ### Skills
 
-通过 git submodule 挂载 [`jaymie9019/skills`](https://github.com/jaymie9019/skills) 到 `skills/` 目录，统一在那个仓库维护、这里只引用。
+Skill 源仓库在 [`jaymie9019/skills`](https://github.com/jaymie9019/skills)，定期 vendor（复制）到本仓库 `skills/` 目录下，确保 `/plugin install` 时一次拉齐、不依赖 submodule。
 
 | Skill | 说明 |
 | --- | --- |
@@ -35,33 +35,33 @@ Jaymie 个人 Claude Code 工具箱，按官方 [Plugin](https://code.claude.com
 /plugin marketplace update jaymie-tools
 ```
 
-> ⚠️ `skills/` 是 git submodule。如果发现通过 `/plugin install` 装好后 skills 内容为空（取决于 Claude Code 是否递归 clone submodule），改走下面的"本地试用 / 开发模式"。
-
 ## 本地试用 / 开发模式
 
 ```bash
-# 注意：本仓库含 submodule，clone 时必须带 --recurse-submodules
-git clone --recurse-submodules https://github.com/jaymie9019/jaymie-claude-tools.git
+git clone https://github.com/jaymie9019/jaymie-claude-tools.git
 claude --plugin-dir ./jaymie-claude-tools
-```
-
-如果忘了带 `--recurse-submodules`，在仓库目录里补跑：
-
-```bash
-git submodule update --init --recursive
 ```
 
 启动后用 `/jaymie-claude-tools:<command>` 调用任意命令；`/help` 可以看到本插件下的所有命令。修改插件内容后，在会话里运行 `/reload-plugins` 即可热加载，不需要重启。
 
 ## 维护：同步 skills 仓库
 
-skills 仓库（`jaymie9019/skills`）有更新后：
+新 skill 或 skill 更新都在 [`jaymie9019/skills`](https://github.com/jaymie9019/skills) 仓库做。同步到本仓库：
 
 ```bash
+# 1. 拉最新的 skills 仓库到临时位置
+git clone --depth 1 https://github.com/jaymie9019/skills.git /tmp/skills-src
+
+# 2. 用最新内容覆盖本仓库的 skills/（保留目录结构）
+rm -rf ~/projects/jaymie-claude-tools/skills
+cp -r /tmp/skills-src ~/projects/jaymie-claude-tools/skills
+rm -rf ~/projects/jaymie-claude-tools/skills/.git
+
+# 3. 提交 + 推送
 cd ~/projects/jaymie-claude-tools
-git submodule update --remote skills
-git add skills && git commit -m "Bump skills submodule"
+git add skills && git commit -m "Sync skills from jaymie9019/skills"
 git push
+rm -rf /tmp/skills-src
 ```
 
 ## 目录结构
@@ -73,16 +73,15 @@ jaymie-claude-tools/
 │   └── marketplace.json         # Marketplace catalog (self-referencing)
 ├── commands/                    # User-invoked slash commands
 │   └── print-sessionid.md
-├── skills/                      # Submodule -> jaymie9019/skills
+├── skills/                      # Vendored from jaymie9019/skills
 │   └── html-spec-workflow/
 │       ├── SKILL.md
 │       ├── prompts/
 │       └── references/
-├── .gitmodules
 └── README.md
 ```
 
-后续会扩展 `agents/`、`hooks/` 等目录。新 skill 直接在 [`jaymie9019/skills`](https://github.com/jaymie9019/skills) 维护。
+后续会扩展 `agents/`、`hooks/` 等目录。
 
 ## License
 
