@@ -1,6 +1,7 @@
 ---
 name: grok-search
-description: Use this skill whenever you need current, real-time information from the web or X/Twitter that may be beyond your training cutoff — recent events, latest software releases, breaking news, library changelogs, current prices or stats, "what's the latest on …", or any time-sensitive fact you'd otherwise have to guess at. It runs Grok's live web/X search via the `grokx` CLI and returns a concise summary with source links. The skill self-bootstraps: it installs the `grokx` binary on first use and guides one-time authentication. Prefer this over relying on stale knowledge for anything that could have changed recently.
+description: >-
+  Use this skill whenever you need current, real-time information from the web or X/Twitter that may be beyond your training cutoff — recent events, latest software releases, breaking news, library changelogs, current prices or stats, "what's the latest on …", or any time-sensitive fact you'd otherwise have to guess at. It runs Grok's live web/X search via the `grokx` CLI and returns a concise summary with source links. The skill self-bootstraps and installs the `grokx` binary on first use, then guides one-time authentication. Prefer this over relying on stale knowledge for anything that could have changed recently.
 ---
 
 # Grok Search
