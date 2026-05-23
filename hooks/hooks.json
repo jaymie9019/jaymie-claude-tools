@@ -1,0 +1,41 @@
+{
+  "description": "Hindsight memory lifecycle hooks for Claude Code. The bundled wrapper delegates to the user's local ~/.hindsight/claude-code scripts when they are installed.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/run-hindsight-hook.sh",
+            "args": ["session_start.py"],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/run-hindsight-hook.sh",
+            "args": ["recall.py"],
+            "timeout": 12
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/run-hindsight-hook.sh",
+            "args": ["retain.py"],
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
