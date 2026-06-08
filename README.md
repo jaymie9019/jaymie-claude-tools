@@ -10,6 +10,7 @@ Jaymie 个人 Claude Code 工具箱，按官方 [Plugin](https://code.claude.com
 | --- | --- | --- |
 | `/print-sessionid` | user-invoked | 打印当前 Claude Code 会话的 session ID（Desktop / CLI 通用） |
 | `html-spec-workflow` | model-invoked | 用 HTML（而非 Markdown）作为 AI 协作的规格/计划/设计系统媒介。触发词：做计划、PRD、技术规格、脑暴、设计系统、用 HTML 写 spec 等 |
+| `collect-html` | model-invoked | 把 Claude/Codex 生成的 HTML 产物收进本地面板（symlink + manifest，真文件留项目，删除=仅脱管）。触发词：收藏 html、收藏网页、把这个 html 收起来 |
 | Hindsight memory hooks | plugin hooks | 自动注册 `SessionStart` / `UserPromptSubmit` / `Stop`，复用本机 `~/.hindsight/claude-code/scripts/` 做记忆预热、召回和写入 |
 
 > `html-spec-workflow` 由 model 根据上下文自动调用，无需手动触发；其源仓库在 [`jaymie9019/skills`](https://github.com/jaymie9019/skills)，定期 vendor 到本仓库 `skills/` 下。
@@ -110,10 +111,14 @@ jaymie-claude-tools/
 ├── skills/
 │   ├── print-sessionid/         # User-invoked (disable-model-invocation)
 │   │   └── SKILL.md
-│   └── html-spec-workflow/      # Model-invoked (vendored from jaymie9019/skills)
+│   ├── html-spec-workflow/      # Model-invoked (vendored from jaymie9019/skills)
+│   │   ├── SKILL.md
+│   │   ├── prompts/
+│   │   └── references/
+│   └── collect-html/            # Model-invoked，本仓库直接维护
 │       ├── SKILL.md
-│       ├── prompts/
-│       └── references/
+│       ├── SETUP.md
+│       └── scripts/             # collect-html.ts (CLI) + server.ts (面板后端)
 ├── tests/
 │   └── hindsight-hook-wrapper.test.sh
 └── README.md
