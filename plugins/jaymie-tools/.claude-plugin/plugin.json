@@ -1,7 +1,7 @@
 {
   "name": "jaymie-tools",
   "description": "Jaymie's custom Claude Code skills and Hindsight memory hooks",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "author": {
     "name": "Jaymie"
   },

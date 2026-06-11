@@ -7,9 +7,13 @@ description: Grilling session that challenges your plan against the existing dom
 
 Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
 
-Ask the questions one at a time, waiting for feedback on each question before continuing.
+Make sure the questions are not obvious — probe technical implementation, UX, tradeoffs, edge cases, and failure modes, not surface preferences I could have answered without you.
+
+Ask the questions one at a time, waiting for feedback on each question before continuing. If a structured question tool is available (e.g. AskUserQuestion in Claude Code), use it and put your recommended answer first; otherwise ask in plain text.
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
+
+When the interview is complete, write the resolved plan to a spec file — update the spec the user pointed you at, or create one if none exists — so the outcome survives the conversation. (`CONTEXT.md` and ADRs are updated inline during the session as usual; the spec file is in addition to those, not a replacement.)
 
 </what-to-do>
 
