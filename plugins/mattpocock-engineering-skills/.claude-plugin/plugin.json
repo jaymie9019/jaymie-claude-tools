@@ -1,0 +1,11 @@
+{
+  "name": "mattpocock-engineering-skills",
+  "description": "Engineering skills vendored from mattpocock/skills: diagnose, tdd, triage, to-issues, to-prd, prototype, and more",
+  "version": "0.3.0",
+  "author": {
+    "name": "Jaymie"
+  },
+  "homepage": "https://github.com/jaymie9019/jaymie-claude-tools",
+  "repository": "https://github.com/jaymie9019/jaymie-claude-tools",
+  "license": "MIT"
+}
