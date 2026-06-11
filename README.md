@@ -16,9 +16,9 @@ Jaymie 个人 Claude Code 插件仓库，按官方 [Plugin](https://code.claude.
 /plugin marketplace add jaymie9019/jaymie-claude-tools
 
 # 按需选装,互不依赖
-/plugin install jaymie-tools@jaymie-tools
-/plugin install mattpocock-engineering-skills@jaymie-tools
-/plugin install mattpocock-productivity-skills@jaymie-tools
+/plugin install jaymie-tools@jaymie-skills
+/plugin install mattpocock-engineering-skills@jaymie-skills
+/plugin install mattpocock-productivity-skills@jaymie-skills
 ```
 
 之后用 `/plugin` 管理（启用/禁用/更新/卸载）。
@@ -26,8 +26,8 @@ Jaymie 个人 Claude Code 插件仓库，按官方 [Plugin](https://code.claude.
 **更新到最新版本**：
 
 ```
-/plugin marketplace update jaymie-tools          # 1. 拉最新的 marketplace catalog
-/plugin update <plugin-name>@jaymie-tools        # 2. 升级 plugin 本体（仅当 plugin.json 的 version 已 bump）
+/plugin marketplace update jaymie-skills          # 1. 拉最新的 marketplace catalog
+/plugin update <plugin-name>@jaymie-skills        # 2. 升级 plugin 本体（仅当 plugin.json 的 version 已 bump）
 ```
 
 > 因为各 `plugin.json` 设置了显式 `version` 字段，必须 bump 它（如 `0.7.0` → `0.7.1`）`/plugin update` 才会重拉。如果想"每次 commit 都算新版本"，可以删掉 manifest 里的 `version` 字段。
@@ -135,7 +135,7 @@ git clone --depth 1 https://github.com/mattpocock/skills.git /tmp/mp-skills
 
 ### 发版
 
-改动后 bump 对应 plugin 的 `plugin.json` version，commit + push 即可；安装方跑 `/plugin marketplace update jaymie-tools` + `/plugin update` 获取。
+改动后 bump 对应 plugin 的 `plugin.json` version，commit + push 即可；安装方跑 `/plugin marketplace update jaymie-skills` + `/plugin update` 获取。
 
 ## 目录结构
 
