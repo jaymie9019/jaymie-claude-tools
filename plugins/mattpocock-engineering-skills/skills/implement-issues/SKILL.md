@@ -41,8 +41,12 @@ Do not assume serial, do not assume parallel — **analyze, then decide**:
 - Build the dependency graph from the "Blocked by" fields.
 - Predict file overlap: for each issue, estimate which modules/files it touches. Issues with overlapping footprints conflict even when not formally blocked.
 - Issues that are independent in both senses can run in parallel; everything else runs in dependency order.
+- **Size each issue and assign its implementation agent a model by complexity — pass `model` explicitly, never rely on the default.** Only three tiers:
+  - **Complex** → `opus` — cross-cutting changes, tricky domain logic, ambiguous design, or a slice touching many layers/modules.
+  - **Medium** → `sonnet` — a normal vertical slice with clear acceptance criteria and a bounded footprint. This is the default tier when unsure.
+  - **Trivial** → `haiku` — mechanical or near-mechanical work: a config tweak, a one-file edit, a rename, a copy change.
 
-If a workflow orchestration tool is available (e.g. the Workflow tool in Claude Code), author a workflow that encodes this graph — parallel branches MUST use isolated worktrees, and merge back in dependency order. Without such a tool, fall back to sequential execution in dependency order.
+If a workflow orchestration tool is available (e.g. the Workflow tool in Claude Code), author a workflow that encodes this graph — parallel branches MUST use isolated worktrees, and merge back in dependency order; pass each branch's `agent()` the model tier you assigned above. Without such a tool, fall back to sequential execution in dependency order.
 
 Each issue gets a fresh implementation agent (or a fresh start, when running inline) — don't let one issue's context bleed into the next.
 
