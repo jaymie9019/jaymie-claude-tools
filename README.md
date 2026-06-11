@@ -7,7 +7,7 @@ Jaymie 个人 Claude Code 插件仓库，按官方 [Plugin](https://code.claude.
 | Plugin | 内容 | 适合谁装 |
 | --- | --- | --- |
 | [`jaymie-tools`](plugins/jaymie-tools/) | Jaymie 自定义 skill（grok-search、html-spec-workflow、print-sessionid）+ Hindsight 记忆 hooks | 自己的日常主力 |
-| [`mattpocock-engineering-skills`](plugins/mattpocock-engineering-skills/) | 从 mattpocock/skills vendor 的 10 个工程 skill | 写代码时 |
+| [`mattpocock-engineering-skills`](plugins/mattpocock-engineering-skills/) | 从 mattpocock/skills vendor 的 10 个工程 skill + 1 个原创（implement-issues） | 写代码时 |
 | [`mattpocock-productivity-skills`](plugins/mattpocock-productivity-skills/) | 从 mattpocock/skills vendor 的 5 个效率 skill | 通用工作流 |
 
 ## 安装
@@ -80,7 +80,7 @@ claude plugin validate .
 
 ## Plugin 2：mattpocock-engineering-skills
 
-从 [`mattpocock/skills`](https://github.com/mattpocock/skills)（MIT License）vendor 进来，本仓库自行维护更新，不保证与上游同步。导入基线：上游 commit `694fa30`（2026-06）。
+从 [`mattpocock/skills`](https://github.com/mattpocock/skills)（MIT License）vendor 进来，本仓库自行维护更新，不保证与上游同步。导入基线：上游 commit `694fa30`（2026-06）。`implement-issues` 是本仓库原创，非上游 vendor。
 
 | Skill | 说明 |
 | --- | --- |
@@ -94,6 +94,7 @@ claude plugin validate .
 | [`to-prd`](plugins/mattpocock-engineering-skills/skills/to-prd/SKILL.md) | 把当前会话上下文整理成 PRD 并提交为 GitHub issue |
 | [`zoom-out`](plugins/mattpocock-engineering-skills/skills/zoom-out/SKILL.md) | 让 agent 跳出细节，对不熟悉的代码给出更高层视角 |
 | [`prototype`](plugins/mattpocock-engineering-skills/skills/prototype/SKILL.md) | 构建一次性原型验证设计：终端应用验证状态/业务逻辑，或单路由多 UI 变体切换 |
+| [`implement-issues`](plugins/mattpocock-engineering-skills/skills/implement-issues/SKILL.md) | （原创）AFK 批量实现一个需求的全部 `ready-for-agent` issue：设目标 → 自行编排并行/串行 → 每个 issue 走 tdd → 双层独立验证 → 偏差报告 |
 
 ## Plugin 3：mattpocock-productivity-skills
 
@@ -155,7 +156,7 @@ jaymie-claude-tools/
 │   │       └── html-spec-workflow/
 │   ├── mattpocock-engineering-skills/
 │   │   ├── .claude-plugin/plugin.json
-│   │   └── skills/                          # 10 个工程 skill
+│   │   └── skills/                          # 10 个 vendor 工程 skill + implement-issues
 │   └── mattpocock-productivity-skills/
 │       ├── .claude-plugin/plugin.json
 │       └── skills/                          # 5 个效率 skill
