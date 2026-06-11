@@ -6,9 +6,19 @@
   },
   "plugins": [
     {
-      "name": "jaymie-claude-tools",
-      "source": "./",
-      "description": "Personal toolbox of Claude Code commands and skills"
+      "name": "jaymie-tools",
+      "source": "./plugins/jaymie-tools",
+      "description": "Jaymie's custom skills (grok-search, html-spec-workflow, print-sessionid) and Hindsight memory hooks"
+    },
+    {
+      "name": "mattpocock-engineering-skills",
+      "source": "./plugins/mattpocock-engineering-skills",
+      "description": "Engineering skills vendored from mattpocock/skills (MIT): diagnose, tdd, triage, to-issues, to-prd, prototype, zoom-out, etc."
+    },
+    {
+      "name": "mattpocock-productivity-skills",
+      "source": "./plugins/mattpocock-productivity-skills",
+      "description": "Productivity skills vendored from mattpocock/skills (MIT): caveman, grill-me, handoff, teach, write-a-skill"
     }
   ]
 }
