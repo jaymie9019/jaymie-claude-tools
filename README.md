@@ -14,6 +14,35 @@ Jaymie 个人 Claude Code 工具箱，按官方 [Plugin](https://code.claude.com
 
 > `html-spec-workflow` 由 model 根据上下文自动调用，无需手动触发；其源仓库在 [`jaymie9019/skills`](https://github.com/jaymie9019/skills)，定期 vendor 到本仓库 `skills/` 下。
 
+## 来自 mattpocock/skills 的 skills
+
+从 [`mattpocock/skills`](https://github.com/mattpocock/skills)（MIT License）vendor 进来的 15 个 skill，本仓库自行维护更新，不保证与上游同步。导入基线：上游 commit `694fa30`（2026-06）。
+
+### Engineering（日常代码工作）
+
+| Skill | 说明 |
+| --- | --- |
+| [`diagnose`](skills/diagnose/SKILL.md) | 疑难 bug / 性能回归的纪律化诊断循环：复现 → 最小化 → 假设 → 插桩 → 修复 → 回归测试 |
+| [`grill-with-docs`](skills/grill-with-docs/SKILL.md) | 拷问式评审：用已有领域模型挑战你的方案，打磨术语，并就地更新 `CONTEXT.md` 与 ADR |
+| [`triage`](skills/triage/SKILL.md) | 按 triage 角色状态机处理 issue |
+| [`improve-codebase-architecture`](skills/improve-codebase-architecture/SKILL.md) | 基于 `CONTEXT.md` 领域语言和 `docs/adr/` 决策，寻找代码库的架构深化机会 |
+| [`setup-engineering-skills`](skills/setup-engineering-skills/SKILL.md) | 脚手架每个仓库的配置（issue tracker、triage 标签、领域文档布局），供其他 engineering skill 消费。上游原名 `setup-matt-pocock-skills` |
+| [`tdd`](skills/tdd/SKILL.md) | 红-绿-重构循环的 TDD，按 vertical slice 逐片实现功能或修 bug |
+| [`to-issues`](skills/to-issues/SKILL.md) | 把任意 plan / spec / PRD 按 vertical slice 拆成可独立认领的 GitHub issue |
+| [`to-prd`](skills/to-prd/SKILL.md) | 把当前会话上下文整理成 PRD 并提交为 GitHub issue |
+| [`zoom-out`](skills/zoom-out/SKILL.md) | 让 agent 跳出细节，对不熟悉的代码给出更高层视角 |
+| [`prototype`](skills/prototype/SKILL.md) | 构建一次性原型验证设计：终端应用验证状态/业务逻辑，或单路由多 UI 变体切换 |
+
+### Productivity（通用工作流）
+
+| Skill | 说明 |
+| --- | --- |
+| [`caveman`](skills/caveman/SKILL.md) | 极简压缩沟通模式，砍掉填充词省 ~75% token，技术准确性不变 |
+| [`grill-me`](skills/grill-me/SKILL.md) | 对你的计划/设计穷追猛打地提问，直到决策树每个分支都有答案 |
+| [`handoff`](skills/handoff/SKILL.md) | 把当前会话压缩成交接文档，让另一个 agent 接着干 |
+| [`teach`](skills/teach/SKILL.md) | 以当前目录为有状态教学工作区，跨多个会话教会用户一项新技能或概念 |
+| [`write-a-skill`](skills/write-a-skill/SKILL.md) | 按正确结构、渐进披露和资源捆绑规范创建新 skill |
+
 ## Hindsight 记忆 hooks
 
 从 `0.3.0` 起，本插件自带 `hooks/hooks.json`。启用插件后，Claude Code 会在以下生命周期事件中调用 wrapper：
