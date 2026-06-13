@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<!--
+  decode-skill 输出模板。填充说明：
+  1. 替换所有 {{...}} 占位符。
+  2. 复制 <article class="fragment">...</article> 整块，每个 skill 片段一份，按原文顺序排列。
+     每块的 id="frag-N" 按顺序编号（frag-1, frag-2, ...）；左侧大纲会自动从这些块生成，无需手维护。
+     给每块设 data-toc="短标签"（2–6 字，如 Frontmatter / 核心指令）——大纲只显示它，避免长标题在大纲里折行；
+     .ttl 仍写完整标题。没写 data-toc 时大纲会回退用 .ttl。
+  3. 双语处理（无显示切换，永远对照呈现）：
+     - 非中文源：保留每块的 .orig 与 .zh 两栏；.zh 填忠实译文（非改写）。body 保持 class 默认。
+     - 中文源：删掉每块的 .zh 栏，并给 <body> 加 class="no-bilingual"（右栏自动收起为单栏）。
+  4. 标签 chip：每片段必改。{{EAR_TAG}} 用 E·Expert / A·Activation / R·Redundant 之一，class 改成
+     .tag-e/.tag-a/.tag-r；{{DIMENSION_TAG}} 填如「D4 Description」。失败模式用 .tag-warn。
+  5. 评分区（skill-judge 8 维）：填每个 D1–D8 的得分与一行依据，填总分 {{TOTAL}}、百分比 {{TOTAL_PCT}}、
+     等级 {{GRADE}}（A/B/C/D/F，并把 .grade 的 class 改成 grade-a/b/c/d/f）。每条 .barfill 的 width 填
+     该维得分占该维满分的百分比。分数是判断性结论，依据要诚实，并在「带走什么」点明这把尺子的盲区。
+  6. 出处链接：{{SOURCE_HREF}} 填可点击地址（本地用 file:///绝对路径，GitHub 用 blob/raw 链接）。
+  7. 不要改 <style> 与 <script>。结构/交互是低自由度区；讲解 prose、译文、标签、评分依据是高自由度区。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>解读 · {{SKILL_NAME}}</title>
+<style>
+  :root{
+    --ink:#1a1a1a; --soft:#5c5c57; --faint:#8a8a82; --rule:#e3e0d8;
+    --bg:#fdfcf9; --accent:#7a2e2e; --good:#2f6b3a; --warn:#9a6a00; --bad:#9a2e2e; --dim:#2f5a6b;
+    --chip:#f1eee6; --card:#fff; --tint:#faf8f2;
+  }
+  *{box-sizing:border-box}
+  html{font-size:16.5px; scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink); line-height:1.55;
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Songti SC","Source Han Serif SC",serif;
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:920px; margin:0 auto; padding:3.2rem 1.6rem 6rem}
+  header.doc{border-bottom:2px solid var(--ink); padding-bottom:1rem; margin-bottom:1.4rem}
+  .kicker{font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); font-weight:700; font-family:ui-sans-serif,system-ui,sans-serif}
+  h1{font-size:1.95rem; line-height:1.15; margin:.4rem 0 .3rem; font-weight:600}
+  .meta{color:var(--soft); font-size:.88rem; font-family:ui-sans-serif,system-ui,sans-serif}
+  .meta a{color:var(--accent); text-decoration:none; border-bottom:1px solid var(--rule)}
+  .meta a:hover{border-color:var(--accent)}
+
+  /* 鸟瞰 */
+  .birdseye{background:var(--card); border:1px solid var(--rule); border-radius:10px; padding:1.1rem 1.3rem; margin:1.4rem 0}
+  .birdseye h2{margin:0 0 .5rem; font-size:1.15rem}
+  .birdseye p{margin:.4rem 0}
+  .facts{display:grid; grid-template-columns:repeat(3,1fr); gap:.6rem; margin:.8rem 0 0; font-family:ui-sans-serif,system-ui,sans-serif}
+  @media(max-width:620px){.facts{grid-template-columns:1fr}}
+  .facts .f{background:var(--chip); border-radius:8px; padding:.55rem .7rem}
+  .facts .l{font-size:.64rem; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); font-weight:700}
+  .facts .v{font-size:1rem; font-weight:700; margin-top:.15rem}
+
+  h2.section{font-size:1.4rem; margin:2.6rem 0 .3rem; font-weight:600}
+  .hint{color:var(--soft); font-style:italic; font-size:.9rem; margin-bottom:1rem}
+
+  /* 片段卡：双语对照，左右成对、视觉统一 */
+  .fragment{border:1px solid var(--rule); border-radius:10px; overflow:hidden; margin:1.2rem 0; background:var(--card); scroll-margin-top:1rem}
+  .fragment .frag-head{display:flex; justify-content:space-between; align-items:center; gap:.6rem; padding:.5rem .9rem; background:#f7f5ef; border-bottom:1px solid var(--rule); font-family:ui-sans-serif,system-ui,sans-serif}
+  .frag-head .ttl{font-size:.82rem; font-weight:700}
+  .frag-head .loc{font-size:.7rem; color:var(--faint); font-family:"SF Mono",ui-monospace,Menlo,monospace}
+  .bilingual{display:grid; grid-template-columns:1fr 1fr}
+  body.no-bilingual .bilingual{grid-template-columns:1fr}
+  .col{padding:.55rem 0 .9rem; position:relative}
+  .col .clbl{font-family:ui-sans-serif,system-ui,sans-serif; font-size:.58rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); font-weight:700; display:inline-block; margin:0 0 .5rem .95rem; padding:.12em .55em; background:var(--chip); border-radius:99px}
+  .col .body{padding:0 .95rem}
+  .orig{background:var(--tint)}
+  .orig .body{font-family:"SF Mono",ui-monospace,Menlo,monospace; font-size:.8rem; line-height:1.65; white-space:pre-wrap; word-break:break-word}
+  .zh .body{font-size:.93rem; line-height:1.72; color:var(--ink)}
+  body:not(.no-bilingual) .zh{border-left:1px solid var(--rule)}
+  body.no-bilingual .zh{display:none}
+  @media(max-width:720px){
+    .bilingual{grid-template-columns:1fr}
+    body:not(.no-bilingual) .zh{border-left:0; border-top:1px solid var(--rule)}
+  }
+
+  .annot{padding:.85rem .95rem; border-top:1px solid var(--rule)}
+  .annot .chips{display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:.55rem}
+  .tag{font-family:ui-sans-serif,system-ui,sans-serif; font-size:.68rem; font-weight:700; padding:.16em .6em; border-radius:99px; letter-spacing:.03em; white-space:nowrap}
+  .tag-e{background:#e2efe4; color:var(--good)} .tag-a{background:#f6eccf; color:var(--warn)} .tag-r{background:#f3dede; color:var(--bad)}
+  .tag-dim{background:#dfeaef; color:var(--dim)} .tag-warn{background:#f3dede; color:var(--bad)}
+  .annot p{margin:.4rem 0; font-size:.94rem}
+  .annot .why{font-size:.88rem; color:var(--soft)}
+
+  /* skill-judge 评分区 */
+  .scoring{margin-top:2.6rem}
+  .score-head{display:flex; align-items:center; gap:1.1rem; margin:1rem 0 1.2rem}
+  .grade{font-family:ui-sans-serif,system-ui,sans-serif; font-weight:800; font-size:2rem; width:3.2rem; height:3.2rem; display:flex; align-items:center; justify-content:center; border-radius:12px; color:#fff; flex:0 0 auto}
+  .grade-a{background:var(--good)} .grade-b{background:#3f7d55} .grade-c{background:var(--warn)} .grade-d{background:#b1632a} .grade-f{background:var(--bad)}
+  .score-head .total{flex:1}
+  .total .tnum{font-family:ui-sans-serif,system-ui,sans-serif; font-weight:700; font-size:1.2rem}
+  .total .tnum span{color:var(--faint); font-weight:600; font-size:.9rem}
+  .total .tbar{height:8px; background:var(--chip); border-radius:99px; overflow:hidden; margin-top:.4rem}
+  .total .tbar i{display:block; height:100%; background:var(--accent); border-radius:99px}
+  table.rubric{width:100%; border-collapse:collapse; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.86rem}
+  table.rubric th{text-align:left; font-size:.64rem; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); font-weight:700; padding:.4rem .6rem; border-bottom:1px solid var(--rule)}
+  table.rubric td{padding:.55rem .6rem; border-bottom:1px solid var(--rule); vertical-align:top}
+  table.rubric .dim{font-weight:700; white-space:nowrap}
+  table.rubric .sc{white-space:nowrap; width:8.5rem}
+  table.rubric .sc b{font-variant-numeric:tabular-nums}
+  table.rubric .sc .max{color:var(--faint); font-weight:600}
+  table.rubric .bar{height:5px; background:var(--chip); border-radius:99px; overflow:hidden; margin-top:.35rem; width:6.5rem}
+  table.rubric .barfill{display:block; height:100%; background:var(--dim); border-radius:99px}
+  table.rubric .basis{color:var(--soft); line-height:1.5}
+  @media(max-width:620px){table.rubric .bar{display:none}}
+
+  .takeaways{background:var(--chip); border-left:3px solid var(--accent); border-radius:0 8px 8px 0; padding:1rem 1.2rem; margin:2rem 0}
+  .takeaways h2{margin:0 0 .5rem; font-size:1.15rem}
+  .takeaways ul{margin:.3rem 0; padding-left:1.2rem}
+  .takeaways li{margin:.35rem 0; font-size:.93rem}
+
+  /* 出处引用 */
+  .cite{border:1px solid var(--rule); border-radius:10px; padding:.9rem 1.1rem; margin:1.6rem 0 0; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.9rem; background:var(--card)}
+  .cite .l{font-size:.64rem; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); font-weight:700; display:block; margin-bottom:.35rem}
+  .cite a{color:var(--accent); word-break:break-all}
+
+  footer{margin-top:2rem; padding-top:1rem; border-top:1px solid var(--rule); font-size:.78rem; color:var(--faint); font-family:ui-sans-serif,system-ui,sans-serif}
+  footer a{color:var(--accent)}
+
+  /* 左侧大纲：默认展开；收起时才露浮动按钮，二者不并存 */
+  #toc-btn{position:fixed; left:1rem; top:1rem; z-index:31; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.8rem; font-weight:700; padding:.45em .9em; border:1px solid var(--rule); background:var(--card); border-radius:99px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.06); color:var(--accent); display:none}
+  #toc-btn:hover{border-color:var(--accent)}
+  body:not(.toc-open) #toc-btn{display:block}
+  #toc-panel{position:fixed; left:1rem; top:1.5rem; bottom:1.5rem; z-index:30; width:244px; background:var(--card); border:1px solid var(--rule); border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.10); display:none; flex-direction:column; overflow:hidden}
+  body.toc-open #toc-panel{display:flex}
+  #toc-panel .toc-head{display:flex; align-items:center; justify-content:space-between; gap:.5rem; padding:.7rem .6rem .65rem .85rem; border-bottom:1px solid var(--rule); flex:0 0 auto}
+  #toc-panel .toc-head .tt{display:flex; flex-direction:column; line-height:1.1}
+  #toc-panel .toc-head .k{font-family:ui-sans-serif,system-ui,sans-serif; font-size:.58rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700}
+  #toc-panel .toc-head .n{font-size:1.02rem; font-weight:600; color:var(--ink); margin-top:.18rem}
+  #toc-panel .toc-close{flex:0 0 auto; width:1.55rem; height:1.55rem; border:1px solid var(--rule); background:var(--card); border-radius:8px; cursor:pointer; color:var(--faint); font-size:1.05rem; line-height:1; display:flex; align-items:center; justify-content:center; font-family:ui-sans-serif,system-ui,sans-serif}
+  #toc-panel .toc-close:hover{border-color:var(--accent); color:var(--accent)}
+  #toc-panel .toc-list{flex:1 1 auto; overflow:auto; padding:.45rem .3rem .5rem}
+  #toc-panel a{display:flex; align-items:baseline; gap:.5rem; padding:.4rem .55rem; border-radius:7px; color:var(--ink); text-decoration:none; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.83rem; line-height:1.4}
+  #toc-panel a:hover{background:var(--chip); color:var(--accent)}
+  #toc-panel a.special{color:var(--accent); font-weight:700; margin-top:.3rem; border-top:1px solid var(--rule); padding-top:.6rem; border-radius:0}
+  #toc-panel a .ti{flex:0 0 auto; color:var(--faint); font-family:"SF Mono",ui-monospace,Menlo,monospace; font-size:.72rem}
+  /* 窄屏：大纲变浮层，阴影更重；默认收起，避免遮挡正文 */
+  @media(max-width:1240px){ #toc-panel{box-shadow:0 10px 34px rgba(0,0,0,.18)} }
+
+  @media print{
+    body{background:#fff} .wrap{padding:0} a{color:var(--ink); text-decoration:none; border:0}
+    .fragment,.scoring{break-inside:avoid} #toc-btn,#toc-panel{display:none !important}
+    .bilingual{grid-template-columns:1fr 1fr}
+    body .zh{display:block !important} body .orig{display:block !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="doc">
+  <div class="kicker">Decode · skill-judge 视角解读</div>
+  <h1>{{SKILL_NAME}}</h1>
+  <div class="meta">来源：<a href="{{SOURCE_HREF}}">{{SOURCE}}</a> · 解读日期：{{DATE}} · 原文语言：{{LANG}}</div>
+</header>
+
+<!-- ============ 鸟瞰 ============ -->
+<section class="birdseye">
+  <h2>鸟瞰：这个 skill 在做什么</h2>
+  <p>{{OVERVIEW_PARAGRAPH}}</p>
+  <div class="facts">
+    <div class="f"><div class="l">最贴近的 Pattern</div><div class="v">{{PATTERN}}</div></div>
+    <div class="f"><div class="l">知识配比 E:A:R</div><div class="v">{{EAR_RATIO}}</div></div>
+    <div class="f"><div class="l">一句话定性</div><div class="v">{{ONE_LINE_VERDICT}}</div></div>
+  </div>
+</section>
+
+<!-- ============ 逐段解读 ============ -->
+<h2 class="section" id="frag-section">逐段解读</h2>
+<p class="hint">逐字引用原文，不改写；右栏中文对照。每段下附讲解 + skill-judge 标签。</p>
+
+<!-- ↓↓↓ 复制此块，每个片段一份。id 顺序编号。中文源请删除 .zh 栏并给 body 加 no-bilingual ↓↓↓ -->
+<!-- data-toc：大纲里显示的短标签（2–6 字，如「Frontmatter」「核心指令」）。.ttl 仍可写完整标题。 -->
+<article class="fragment" id="frag-1" data-toc="{{FRAGMENT_TOC}}">
+  <div class="frag-head"><span class="ttl">{{FRAGMENT_TITLE}}</span><span class="loc">{{FRAGMENT_LOC}}</span></div>
+  <div class="bilingual">
+    <div class="col orig"><span class="clbl">原文</span><div class="body">{{ORIGINAL_VERBATIM}}</div></div>
+    <div class="col zh"><span class="clbl">中文对照</span><div class="body">{{ZH_TRANSLATION}}</div></div>
+  </div>
+  <div class="annot">
+    <!-- 每片段都要改这两个 chip，别照搬默认值 -->
+    <div class="chips">
+      <span class="tag tag-e">{{EAR_TAG}}</span>
+      <span class="tag tag-dim">{{DIMENSION_TAG}}</span>
+    </div>
+    <p>{{EXPLANATION}}</p>
+    <p class="why">{{WHY_THIS_WAY}}</p>
+  </div>
+</article>
+<!-- ↑↑↑ 复制结束 ↑↑↑ -->
+
+<!-- ============ skill-judge 评分 ============ -->
+<section class="scoring" id="scoring">
+  <h2 class="section" style="margin-top:0">skill-judge 评分</h2>
+  <p class="hint">用 skill-judge 的 8 维度量这个 skill。分数是判断性结论，每行附依据；务必结合下方「这把尺子的盲区」一起看。</p>
+  <div class="score-head">
+    <div class="grade grade-c">{{GRADE}}</div>
+    <div class="total">
+      <div class="tnum">{{TOTAL}} <span>/ 120 · {{GRADE_LABEL}}</span></div>
+      <div class="tbar"><i style="width:{{TOTAL_PCT}}%"></i></div>
+    </div>
+  </div>
+  <table class="rubric">
+    <thead><tr><th>维度</th><th>得分</th><th>依据</th></tr></thead>
+    <tbody>
+      <tr><td class="dim">D1 Knowledge Delta</td><td class="sc"><b>{{D1}}</b> <span class="max">/ 20</span><div class="bar"><i class="barfill" style="width:{{D1_PCT}}%"></i></div></td><td class="basis">{{D1_BASIS}}</td></tr>
+      <tr><td class="dim">D2 Mindset + Procedures</td><td class="sc"><b>{{D2}}</b> <span class="max">/ 15</span><div class="bar"><i class="barfill" style="width:{{D2_PCT}}%"></i></div></td><td class="basis">{{D2_BASIS}}</td></tr>
+      <tr><td class="dim">D3 Anti-Pattern</td><td class="sc"><b>{{D3}}</b> <span class="max">/ 15</span><div class="bar"><i class="barfill" style="width:{{D3_PCT}}%"></i></div></td><td class="basis">{{D3_BASIS}}</td></tr>
+      <tr><td class="dim">D4 Description</td><td class="sc"><b>{{D4}}</b> <span class="max">/ 15</span><div class="bar"><i class="barfill" style="width:{{D4_PCT}}%"></i></div></td><td class="basis">{{D4_BASIS}}</td></tr>
+      <tr><td class="dim">D5 Progressive Disclosure</td><td class="sc"><b>{{D5}}</b> <span class="max">/ 15</span><div class="bar"><i class="barfill" style="width:{{D5_PCT}}%"></i></div></td><td class="basis">{{D5_BASIS}}</td></tr>
+      <tr><td class="dim">D6 Freedom Calibration</td><td class="sc"><b>{{D6}}</b> <span class="max">/ 15</span><div class="bar"><i class="barfill" style="width:{{D6_PCT}}%"></i></div></td><td class="basis">{{D6_BASIS}}</td></tr>
+      <tr><td class="dim">D7 Pattern Recognition</td><td class="sc"><b>{{D7}}</b> <span class="max">/ 10</span><div class="bar"><i class="barfill" style="width:{{D7_PCT}}%"></i></div></td><td class="basis">{{D7_BASIS}}</td></tr>
+      <tr><td class="dim">D8 Usability</td><td class="sc"><b>{{D8}}</b> <span class="max">/ 15</span><div class="bar"><i class="barfill" style="width:{{D8_PCT}}%"></i></div></td><td class="basis">{{D8_BASIS}}</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 收尾 ============ -->
+<div class="takeaways">
+  <h2>带走什么</h2>
+  <p style="margin:.2rem 0 .5rem; font-size:.9rem; color:var(--soft)">把这个 skill 的设计经验，转化成你写 skill 时能复用的判断。</p>
+  <ul>
+    <li><b>值得模仿：</b>{{IMITATE}}</li>
+    <li><b>可以更好：</b>{{IMPROVE}}</li>
+    <li><b>这把尺子的盲区：</b>{{RULER_BLINDSPOT}}</li>
+  </ul>
+</div>
+
+<div class="cite">
+  <span class="l">原文出处</span>
+  <a href="{{SOURCE_HREF}}">{{SOURCE}}</a>
+</div>
+
+<footer>
+  解读体系：<a href="https://github.com/softaworks/agent-toolkit/blob/main/skills/skill-judge/SKILL.md">skill-judge</a>（softaworks/agent-toolkit）· 由 decode-skill 生成。<br>
+  评分与标签为判断性结论，附依据、可商榷；这把尺子量 knowledge delta 与 anti-pattern，行为/prompt 型 skill 天然吃亏，分数低不等于不好用。想就某段深聊，回到对话里问我。
+</footer>
+</div>
+
+<button id="toc-btn">≡ 大纲</button>
+<nav id="toc-panel">
+  <div class="toc-head">
+    <span class="tt"><span class="k">Decode 导航</span><span class="n">{{SKILL_NAME}}</span></span>
+    <button class="toc-close" id="toc-close" title="收起大纲" aria-label="收起大纲">×</button>
+  </div>
+  <div class="toc-list" id="toc-list"></div>
+</nav>
+
+<script>
+  // 自动生成大纲：片段 + 评分区
+  const list=document.getElementById("toc-list");
+  document.querySelectorAll("article.fragment").forEach((f,i)=>{
+    if(!f.id) f.id="frag-"+(i+1);
+    // 大纲优先用 data-toc 短标签；没有才回退到完整标题
+    const ttl=f.dataset.toc||(f.querySelector(".ttl")||{}).textContent||("片段 "+(i+1));
+    const a=document.createElement("a");
+    a.href="#"+f.id;
+    a.innerHTML='<span class="ti">'+(i+1).toString().padStart(2,"0")+'</span><span>'+ttl+'</span>';
+    list.appendChild(a);
+  });
+  const scoring=document.getElementById("scoring");
+  if(scoring){
+    const a=document.createElement("a");
+    a.href="#scoring"; a.className="special";
+    a.innerHTML='<span class="ti">★</span><span>skill-judge 评分</span>';
+    list.appendChild(a);
+  }
+  // 宽屏默认展开；窄屏默认收起，避免遮挡正文
+  const open=()=>document.body.classList.add("toc-open");
+  const close=()=>document.body.classList.remove("toc-open");
+  if(!window.matchMedia("(max-width:1240px)").matches) open();
+  document.getElementById("toc-btn").addEventListener("click",open);
+  document.getElementById("toc-close").addEventListener("click",close);
+</script>
+</body>
+</html>

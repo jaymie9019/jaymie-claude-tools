@@ -42,6 +42,7 @@ Jaymie 个人 Claude Code 插件仓库，按官方 [Plugin](https://code.claude.
 | [`grok-search`](plugins/jaymie-tools/skills/grok-search/SKILL.md) | model-invoked | 经 `grokx` CLI 调 Grok 联网搜索，获取实时 web / X 信息 |
 | [`html-spec-workflow`](plugins/jaymie-tools/skills/html-spec-workflow/SKILL.md) | model-invoked | 用 HTML（而非 Markdown）作为 AI 协作的规格/计划/设计系统媒介。触发词：做计划、PRD、技术规格、脑暴、设计系统、用 HTML 写 spec 等 |
 | [`collect-html`](plugins/jaymie-tools/skills/collect-html/SKILL.md) | model-invoked | 把 Claude/Codex 生成的 HTML 产物收进本地面板（symlink + manifest，真文件留项目，删除=仅脱管）。触发词：收藏 html、收藏网页、把这个 html 收起来 |
+| [`decode-skill`](plugins/jaymie-tools/skills/decode-skill/SKILL.md) | model-invoked | 用 skill-judge 方法论解读任意 Agent Skill，产出逐字引用 + 逐段讲解 + 双语对照 + 8 维评分的可视化 HTML。触发词：解读、拆解、看懂 skill、explain this skill、what makes this good |
 | Hindsight memory hooks | plugin hooks | 自动注册 `SessionStart` / `UserPromptSubmit` / `Stop`，复用本机 `~/.hindsight/claude-code/scripts/` 做记忆预热、召回和写入 |
 
 > `html-spec-workflow` 的源仓库在 [`jaymie9019/skills`](https://github.com/jaymie9019/skills)，定期 vendor 到本仓库。
@@ -155,10 +156,14 @@ jaymie-claude-tools/
 │   │       ├── print-sessionid/
 │   │       ├── grok-search/
 │   │       ├── html-spec-workflow/
-│   │       └── collect-html/                # Model-invoked，本仓库直接维护
+│   │       ├── collect-html/                # Model-invoked，本仓库直接维护
+│   │       │   ├── SKILL.md
+│   │       │   ├── SETUP.md
+│   │       │   └── scripts/                 # collect-html.ts (CLI) + server.ts (面板后端)
+│   │       └── decode-skill/                # Model-invoked，本仓库原创：用 skill-judge 解读 skill → 可视化 HTML
 │   │           ├── SKILL.md
-│   │           ├── SETUP.md
-│   │           └── scripts/                 # collect-html.ts (CLI) + server.ts (面板后端)
+│   │           ├── references/skill-judge-lens.md
+│   │           └── assets/decode-template.html
 │   ├── mattpocock-engineering-skills/
 │   │   ├── .claude-plugin/plugin.json
 │   │   └── skills/                          # 10 个 vendor 工程 skill + implement-issues

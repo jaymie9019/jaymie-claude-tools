@@ -8,7 +8,7 @@
     {
       "name": "jaymie-tools",
       "source": "./plugins/jaymie-tools",
-      "description": "Jaymie's custom skills (grok-search, html-spec-workflow, collect-html, print-sessionid) and Hindsight memory hooks"
+      "description": "Jaymie's custom skills (grok-search, html-spec-workflow, collect-html, decode-skill, print-sessionid) and Hindsight memory hooks"
     },
     {
       "name": "mattpocock-engineering-skills",
