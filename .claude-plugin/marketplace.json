@@ -9,16 +9,6 @@
       "name": "jaymie-tools",
       "source": "./plugins/jaymie-tools",
       "description": "Jaymie's custom skills (grok-search, html-spec-workflow, collect-html, decode-skill, print-sessionid) and Hindsight memory hooks"
-    },
-    {
-      "name": "mattpocock-engineering-skills",
-      "source": "./plugins/mattpocock-engineering-skills",
-      "description": "Engineering skills mostly vendored from mattpocock/skills (MIT): diagnose, tdd, triage, to-issues, to-prd, prototype, zoom-out, etc.; plus originals implement-issues and implement-issues-by-codex"
-    },
-    {
-      "name": "mattpocock-productivity-skills",
-      "source": "./plugins/mattpocock-productivity-skills",
-      "description": "Productivity skills vendored from mattpocock/skills (MIT): caveman, grill-me, handoff, teach, write-a-skill"
     }
   ]
 }
